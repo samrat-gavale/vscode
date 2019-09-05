@@ -860,6 +860,7 @@ export class Diagnostic {
 
 	range: Range;
 	message: string;
+	// details?: MarkdownString;
 	source: string;
 	code: string | number;
 	severity: DiagnosticSeverity;

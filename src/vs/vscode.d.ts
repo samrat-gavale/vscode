@@ -4289,6 +4289,11 @@ declare module 'vscode' {
 		message: string;
 
 		/**
+		 * The human-readable details about this diagnostic.
+		 */
+		details?: string;
+
+		/**
 		 * The severity, default is [error](#DiagnosticSeverity.Error).
 		 */
 		severity: DiagnosticSeverity;

@@ -487,12 +487,12 @@ export class ModesContentHoverWidget extends ContentHoverWidget {
 	private renderMarkerHover(markerHover: MarkerHover): HTMLElement {
 		const hoverElement = $('div.hover-row');
 		const markerElement = dom.append(hoverElement, $('div.marker.hover-contents'));
-		const { source, message, code, relatedInformation } = markerHover.marker;
+		const { source, details, code, relatedInformation } = markerHover.marker;
 
 		this._editor.applyFontInfo(markerElement);
 		const messageElement = dom.append(markerElement, $('span'));
 		messageElement.style.whiteSpace = 'pre-wrap';
-		messageElement.innerText = message;
+		messageElement.innerText = details === undefined ? '' : details;
 
 		if (source || code) {
 			const detailsElement = dom.append(markerElement, $('span'));
