@@ -132,7 +132,9 @@ class ModesContentComputer implements IHoverComputer<HoverPart[]> {
 			const range = new Range(hoverRange.startLineNumber, startColumn, hoverRange.startLineNumber, endColumn);
 			const marker = this._markerDecorationsService.getMarker(model, d);
 			if (marker) {
-				return new MarkerHover(range, marker);
+				const contents: IMarkdownString[] = marker.message ? asArray(new MarkdownString(marker.message)) : [];
+				return { contents, range };
+				// return new MarkerHover(range, marker);
 			}
 
 			const colorData = colorDetector.getColorData(d.range.getStartPosition());
@@ -487,12 +489,13 @@ export class ModesContentHoverWidget extends ContentHoverWidget {
 	private renderMarkerHover(markerHover: MarkerHover): HTMLElement {
 		const hoverElement = $('div.hover-row');
 		const markerElement = dom.append(hoverElement, $('div.marker.hover-contents'));
-		const { source, details, code, relatedInformation } = markerHover.marker;
+		const { source, message, code, relatedInformation } = markerHover.marker;
 
 		this._editor.applyFontInfo(markerElement);
 		const messageElement = dom.append(markerElement, $('span'));
 		messageElement.style.whiteSpace = 'pre-wrap';
-		messageElement.innerText = details === undefined ? '' : details;
+		// messageElement.innerText = details === undefined ? '' : details;
+		messageElement.innerText = message;
 
 		if (source || code) {
 			const detailsElement = dom.append(markerElement, $('span'));
