@@ -129,7 +129,8 @@ class ModesContentComputer implements IHoverComputer<HoverPart[]> {
 			const range = new Range(hoverRange.startLineNumber, startColumn, hoverRange.startLineNumber, endColumn);
 			const marker = this._markerDecorationsService.getMarker(model, d);
 			if (marker) {
-				return new MarkerHover(range, marker);
+				const contents: IMarkdownString[] = marker.details ? asArray(new MarkdownString(marker.details)) : [];
+				return { contents, range };
 			}
 
 			const colorData = colorDetector.getColorData(d.range.getStartPosition());

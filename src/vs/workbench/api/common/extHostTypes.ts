@@ -901,6 +901,37 @@ export class Diagnostic {
 	}
 }
 
+export class Diagnostic2 extends Diagnostic {
+
+	details?: string;
+
+	constructor(range: Range, message: string, details?: string, severity: DiagnosticSeverity = DiagnosticSeverity.Error) {
+		super(range, message, severity);
+		this.details = details;
+	}
+
+	toJSON(): any {
+		return {
+			severity: DiagnosticSeverity[this.severity],
+			message: this.message,
+			range: this.range,
+			source: this.source,
+			code: this.code,
+		};
+	}
+
+	static isEqual(a: Diagnostic2 | undefined, b: Diagnostic2 | undefined): boolean {
+		if (a === b) {
+			return true;
+		}
+		if (!a || !b) {
+			return false;
+		}
+		return Diagnostic.isEqual(a, b)
+			&& a.details === b.details;
+	}
+}
+
 @es5ClassCompat
 export class Hover {
 

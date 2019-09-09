@@ -986,4 +986,15 @@ declare module 'vscode' {
 	}
 
 	//#endregion
+
+	//#region Diagnostics
+
+	export class Diagnostic2 extends Diagnostic {
+		/**
+		 * The human-readable details about this diagnostic.
+		 */
+		details?: string;
+	}
+
+	//#endregion
 }

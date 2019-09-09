@@ -129,6 +129,7 @@ export namespace Diagnostic {
 		return {
 			...Range.from(value.range),
 			message: value.message,
+			// details: value.details,
 			source: value.source,
 			code: isString(value.code) || isNumber(value.code) ? String(value.code) : undefined,
 			severity: DiagnosticSeverity.from(value.severity),

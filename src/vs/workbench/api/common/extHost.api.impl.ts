@@ -891,7 +891,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			// proposed
 			CallHierarchyDirection: extHostTypes.CallHierarchyDirection,
 			CallHierarchyItem: extHostTypes.CallHierarchyItem,
-			Decoration: extHostTypes.Decoration
+			Decoration: extHostTypes.Decoration,
+			Diagnostic2: extHostTypes.Diagnostic2
 		};
 	};
 }

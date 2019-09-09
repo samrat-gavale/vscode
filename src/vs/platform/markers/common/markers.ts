@@ -90,6 +90,7 @@ export interface IMarkerData {
 	code?: string;
 	severity: MarkerSeverity;
 	message: string;
+	details?: string;
 	source?: string;
 	startLineNumber: number;
 	startColumn: number;
@@ -110,6 +111,7 @@ export interface IMarker {
 	severity: MarkerSeverity;
 	code?: string;
 	message: string;
+	details?: string;
 	source?: string;
 	startLineNumber: number;
 	startColumn: number;
@@ -157,6 +159,11 @@ export namespace IMarkerData {
 		} else {
 			result.push(emptyString);
 		}
+		// if (markerData.details) {
+		// 	result.push(markerData.details.replace('¦', '\¦'));
+		// } else {
+		// 	result.push(emptyString);
+		// }
 		if (markerData.startLineNumber !== undefined && markerData.startLineNumber !== null) {
 			result.push(markerData.startLineNumber.toString());
 		} else {
