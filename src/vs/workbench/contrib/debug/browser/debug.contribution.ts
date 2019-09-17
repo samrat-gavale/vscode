@@ -24,7 +24,6 @@ import {
 } from 'vs/workbench/contrib/debug/common/debug';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
-import { DebugEditorModelManager } from 'vs/workbench/contrib/debug/browser/debugEditorModelManager';
 import { StartAction, AddFunctionBreakpointAction, ConfigureAction, DisableAllBreakpointsAction, EnableAllBreakpointsAction, RemoveAllBreakpointsAction, RunAction, ReapplyBreakpointsAction, SelectAndStartAction } from 'vs/workbench/contrib/debug/browser/debugActions';
 import { DebugToolBar } from 'vs/workbench/contrib/debug/browser/debugToolBar';
 import * as service from 'vs/workbench/contrib/debug/browser/debugService';
@@ -49,6 +48,7 @@ import { VariablesView } from 'vs/workbench/contrib/debug/browser/variablesView'
 import { ClearReplAction, Repl } from 'vs/workbench/contrib/debug/browser/repl';
 import { DebugContentProvider } from 'vs/workbench/contrib/debug/common/debugContentProvider';
 import { registerAndGetAmdImageURL } from 'vs/base/common/amd';
+import { DebugCallStackContribution } from 'vs/workbench/contrib/debug/browser/debugCallStackContribution';
 
 class OpenDebugViewletAction extends ShowViewletAction {
 	public static readonly ID = VIEWLET_ID;
@@ -120,7 +120,7 @@ const registry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionRegistryEx
 registry.registerWorkbenchAction(new SyncActionDescriptor(OpenDebugPanelAction, OpenDebugPanelAction.ID, OpenDebugPanelAction.LABEL, openPanelKb), 'View: Debug Console', nls.localize('view', "View"));
 registry.registerWorkbenchAction(new SyncActionDescriptor(OpenDebugViewletAction, OpenDebugViewletAction.ID, OpenDebugViewletAction.LABEL, openViewletKb), 'View: Show Debug', nls.localize('view', "View"));
 
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(DebugEditorModelManager, LifecyclePhase.Restored);
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(DebugCallStackContribution, LifecyclePhase.Restored);
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(DebugToolBar, LifecyclePhase.Restored);
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(DebugContentProvider, LifecyclePhase.Eventually);
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(StatusBarColorProvider, LifecyclePhase.Eventually);
@@ -555,7 +555,7 @@ if (isMacintosh) {
 	registerTouchBarEntry(RunAction.ID, RunAction.LABEL, 1, CONTEXT_IN_DEBUG_MODE.toNegated(), URI.parse(registerAndGetAmdImageURL('vs/workbench/contrib/debug/browser/media/continue-without-debugging-tb.png')));
 	registerTouchBarEntry(CONTINUE_ID, CONTINUE_LABEL, 0, CONTEXT_DEBUG_STATE.isEqualTo('stopped'), URI.parse(registerAndGetAmdImageURL('vs/workbench/contrib/debug/browser/media/continue-tb.png')));
 	registerTouchBarEntry(PAUSE_ID, PAUSE_LABEL, 1, ContextKeyExpr.and(CONTEXT_IN_DEBUG_MODE, ContextKeyExpr.notEquals('debugState', 'stopped')), URI.parse(registerAndGetAmdImageURL('vs/workbench/contrib/debug/browser/media/pause-tb.png')));
-	registerTouchBarEntry(STEP_OVER_ID, STEP_OUT_LABEL, 2, CONTEXT_IN_DEBUG_MODE, URI.parse(registerAndGetAmdImageURL('vs/workbench/contrib/debug/browser/media/stepover-tb.png')));
+	registerTouchBarEntry(STEP_OVER_ID, STEP_OVER_LABEL, 2, CONTEXT_IN_DEBUG_MODE, URI.parse(registerAndGetAmdImageURL('vs/workbench/contrib/debug/browser/media/stepover-tb.png')));
 	registerTouchBarEntry(STEP_INTO_ID, STEP_INTO_LABEL, 3, CONTEXT_IN_DEBUG_MODE, URI.parse(registerAndGetAmdImageURL('vs/workbench/contrib/debug/browser/media/stepinto-tb.png')));
 	registerTouchBarEntry(STEP_OUT_ID, STEP_OUT_LABEL, 4, CONTEXT_IN_DEBUG_MODE, URI.parse(registerAndGetAmdImageURL('vs/workbench/contrib/debug/browser/media/stepout-tb.png')));
 	registerTouchBarEntry(RESTART_SESSION_ID, RESTART_LABEL, 5, CONTEXT_IN_DEBUG_MODE, URI.parse(registerAndGetAmdImageURL('vs/workbench/contrib/debug/browser/media/restart-tb.png')));

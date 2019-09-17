@@ -642,6 +642,10 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		if (!this._isVisible) {
 			return;
 		}
+		if (!dom.isInDOM(this._domNode)) {
+			// the widget is not in the DOM
+			return;
+		}
 
 		const layoutInfo = this._codeEditor.getLayoutInfo();
 		const editorContentWidth = layoutInfo.contentWidth;
@@ -778,19 +782,9 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 	private _onFindInputKeyDown(e: IKeyboardEvent): void {
 		if (e.equals(ctrlKeyMod | KeyCode.Enter)) {
-			const inputElement = this._findInput.inputBox.inputElement;
-			const start = inputElement.selectionStart;
-			const end = inputElement.selectionEnd;
-			const content = inputElement.value;
-
-			if (start !== null && end !== null) {
-				const value = content.substr(0, start) + '\n' + content.substr(end);
-				this._findInput.inputBox.value = value;
-				inputElement.setSelectionRange(start + 1, start + 1);
-				this._findInput.inputBox.layout();
-				e.preventDefault();
-				return;
-			}
+			this._findInput.inputBox.insertAtCursor('\n');
+			e.preventDefault();
+			return;
 		}
 
 		if (e.equals(KeyCode.Tab)) {
@@ -832,19 +826,9 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 			}
 
-			const inputElement = this._replaceInput.inputBox.inputElement;
-			const start = inputElement.selectionStart;
-			const end = inputElement.selectionEnd;
-			const content = inputElement.value;
-
-			if (start !== null && end !== null) {
-				const value = content.substr(0, start) + '\n' + content.substr(end);
-				this._replaceInput.inputBox.value = value;
-				inputElement.setSelectionRange(start + 1, start + 1);
-				this._replaceInput.inputBox.layout();
-				e.preventDefault();
-				return;
-			}
+			this._replaceInput.inputBox.insertAtCursor('\n');
+			e.preventDefault();
+			return;
 		}
 
 		if (e.equals(KeyCode.Tab)) {

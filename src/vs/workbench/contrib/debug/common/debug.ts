@@ -12,7 +12,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { ITextModel as EditorIModel } from 'vs/editor/common/model';
 import { IEditor, ITextEditor } from 'vs/workbench/common/editor';
-import { Position } from 'vs/editor/common/core/position';
+import { Position, IPosition } from 'vs/editor/common/core/position';
 import { CompletionItem } from 'vs/editor/common/modes';
 import { Source } from 'vs/workbench/contrib/debug/common/debugSource';
 import { Range, IRange } from 'vs/editor/common/core/range';
@@ -58,6 +58,7 @@ export const CONTEXT_RESTART_FRAME_SUPPORTED = new RawContextKey<boolean>('resta
 export const CONTEXT_JUMP_TO_CURSOR_SUPPORTED = new RawContextKey<boolean>('jumpToCursorSupported', false);
 
 export const EDITOR_CONTRIBUTION_ID = 'editor.contrib.debug';
+export const BREAKPOINT_EDITOR_CONTRIBUTION_ID = 'editor.contrib.breakpoint';
 export const DEBUG_SCHEME = 'debug';
 export const INTERNAL_CONSOLE_OPTIONS_SCHEMA = {
 	enum: ['neverOpen', 'openOnSessionStart', 'openOnFirstSessionStart'],
@@ -104,13 +105,13 @@ export interface IExpressionContainer extends ITreeElement {
 	readonly hasChildren: boolean;
 	getChildren(): Promise<IExpression[]>;
 	readonly reference?: number;
+	readonly value: string;
+	readonly type?: string;
+	valueChanged?: boolean;
 }
 
-export interface IExpression extends IReplElement, IExpressionContainer {
+export interface IExpression extends IExpressionContainer {
 	name: string;
-	readonly value: string;
-	valueChanged?: boolean;
-	readonly type?: string;
 }
 
 export interface IDebugger {
@@ -207,11 +208,12 @@ export interface IDebugSession extends ITreeElement {
 	dataBreakpointInfo(name: string, variablesReference?: number): Promise<{ dataId: string | null, description: string, canPersist?: boolean }>;
 	sendDataBreakpoints(dbps: IDataBreakpoint[]): Promise<void>;
 	sendExceptionBreakpoints(exbpts: IExceptionBreakpoint[]): Promise<void>;
+	breakpointsLocations(uri: uri, lineNumber: number): Promise<IPosition[]>;
 
 	stackTrace(threadId: number, startFrame: number, levels: number): Promise<DebugProtocol.StackTraceResponse>;
 	exceptionInfo(threadId: number): Promise<IExceptionInfo | undefined>;
-	scopes(frameId: number): Promise<DebugProtocol.ScopesResponse>;
-	variables(variablesReference: number, filter: 'indexed' | 'named' | undefined, start: number | undefined, count: number | undefined): Promise<DebugProtocol.VariablesResponse>;
+	scopes(frameId: number, threadId: number): Promise<DebugProtocol.ScopesResponse>;
+	variables(variablesReference: number, threadId: number | undefined, filter: 'indexed' | 'named' | undefined, start: number | undefined, count: number | undefined): Promise<DebugProtocol.VariablesResponse>;
 	evaluate(expression: string, frameId?: number, context?: string): Promise<DebugProtocol.EvaluateResponse>;
 	customRequest(request: string, args: any): Promise<DebugProtocol.Response>;
 
@@ -225,7 +227,7 @@ export interface IDebugSession extends ITreeElement {
 	pause(threadId: number): Promise<void>;
 	terminateThreads(threadIds: number[]): Promise<void>;
 
-	completions(frameId: number | undefined, text: string, position: Position, overwriteBefore: number): Promise<CompletionItem[]>;
+	completions(frameId: number | undefined, text: string, position: Position, overwriteBefore: number, token: CancellationToken): Promise<CompletionItem[]>;
 	setVariable(variablesReference: number | undefined, name: string, value: string): Promise<DebugProtocol.SetVariableResponse>;
 	loadSource(resource: uri): Promise<DebugProtocol.SourceResponse>;
 	getLoadedSources(): Promise<Source[]>;
@@ -504,7 +506,7 @@ export interface IDebugAdapter extends IDisposable {
 	startSession(): Promise<void>;
 	sendMessage(message: DebugProtocol.ProtocolMessage): void;
 	sendResponse(response: DebugProtocol.Response): void;
-	sendRequest(command: string, args: any, clb: (result: DebugProtocol.Response) => void, timeout?: number): void;
+	sendRequest(command: string, args: any, clb: (result: DebugProtocol.Response) => void, timeout?: number): number;
 	stopSession(): Promise<void>;
 }
 
@@ -850,9 +852,12 @@ export const enum BreakpointWidgetContext {
 
 export interface IDebugEditorContribution extends IEditorContribution {
 	showHover(range: Range, focus: boolean): Promise<void>;
+	addLaunchConfiguration(): Promise<any>;
+}
+
+export interface IBreakpointEditorContribution extends IEditorContribution {
 	showBreakpointWidget(lineNumber: number, column: number | undefined, context?: BreakpointWidgetContext): void;
 	closeBreakpointWidget(): void;
-	addLaunchConfiguration(): Promise<any>;
 }
 
 // temporary debug helper service
